@@ -1,0 +1,49 @@
+# Use a more specific Python image tag
+FROM python:3.10.12-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies and clean up in the same step to reduce layer size
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-dev \
+    gcc \
+    git \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first to leverage Docker cache
+COPY pyproject.toml /app/
+# Don't copy lock file as it might be corrupted or incompatible
+# Just copying pyproject.toml is cleaner
+
+# Install Poetry and clean cache in the same step
+RUN pip install --no-cache-dir poetry \
+    && poetry config virtualenvs.create false
+
+# Install dependencies without using the lockfile, using --only main instead of --no-dev
+RUN poetry install --no-interaction --no-ansi --no-root --only main
+
+# Install required packages explicitly
+RUN pip install --no-cache-dir streamlit python-multipart requests aiohttp
+
+# Copy the rest of the application
+COPY . /app/
+
+# Copy Streamlit config
+COPY .streamlit /app/.streamlit
+
+# Expose port for the application
+EXPOSE 8501
+
+# Set environment variables
+ENV API_URL=http://api:8080
+ENV PYTHONPATH=/app
+
+# Set the entrypoint
+ENTRYPOINT ["streamlit", "run", "paper_reader_tools/streamlit_app.py"]
+
+# Default command
+CMD ["--server.port", "8501", "--server.address", "0.0.0.0"]

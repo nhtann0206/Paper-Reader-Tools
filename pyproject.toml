@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "paper-reader-tools"
+version = "0.1.0"
+description = "Tools for reading and summarizing research papers"
+authors = ["nguyenhuutan262004@gmail.com"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.9.7 || >3.9.7,<4.0"  # Updated to exclude Python 3.9.7 for streamlit compatibility
+httpx = "^0.24.0"
+pdfplumber = "^0.9.0"
+python-dotenv = "^1.0.0"
+flask = "^2.3.3"
+flask-cors = "^4.0.0"
+sentence-transformers = {version = "^2.2.0", optional = true}
+pymupdf = "^1.23.0"
+streamlit = "^1.45.0"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+pandas = "^2.2.0"  # Thêm pandas (thường NumPy sẽ được cài đặt kèm theo)
+numpy = {version = "^1.26.0"}  # Chỉ định phiên bản NumPy tương thích
+python-multipart = "^0.0.9"  # Add python-multipart for form handling
+
+[tool.poetry.extras]
+vector = ["sentence-transformers"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+paper-reader = "paper_reader_tools.cli:run_cli"

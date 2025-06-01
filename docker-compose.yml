@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data:rw
+      - ./uploads:/app/uploads:rw
+      - ./output:/app/output:rw
+    environment:
+      - GEMINI_API_URL=${GEMINI_API_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=8080
+      - DB_PATH=/app/data/papers.db  # Thêm đường dẫn database cụ thể
+    user: "${UID:-1000}:${GID:-1000}"  # Sử dụng user ID và group ID của host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - API_URL=http://api:8080
+
+volumes:
+  data:
+  uploads:
+  output:

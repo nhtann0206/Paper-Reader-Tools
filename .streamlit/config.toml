@@ -1,0 +1,19 @@
+[theme]
+primaryColor="#4caf50"
+backgroundColor="#ffffff"
+secondaryBackgroundColor="#f0f2f6"
+textColor="#262730"
+font="sans serif"
+
+[browser]
+serverAddress = "localhost"
+gatherUsageStats = false
+
+[runner]
+# These settings make the app more responsive
+fastReruns = true
+magicEnabled = true
+
+[server]
+enableCORS = true
+enableXsrfProtection = false
